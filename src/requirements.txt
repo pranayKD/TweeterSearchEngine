@@ -30,7 +30,7 @@ mistune==0.8.4
 mongoengine==0.19.1
 nbconvert==5.6.1
 nbformat==4.4.0
-notebook==5.7.10
+notebook==6.4.12
 packaging==20.9
 pandocfilters==1.4.3
 pathlib2==2.3.5
