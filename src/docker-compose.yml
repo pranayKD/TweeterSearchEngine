@@ -1,0 +1,92 @@
+version: "3"
+
+services: 
+    es:
+        image: elasticsearch:7.8.0
+        container_name: twitter_elasticsearch
+        ports: 
+            - 9200:9200
+        volumes: 
+            - es-vol:/data/es
+        restart: on-failure 
+        environment: 
+            discovery.type: single-node
+
+    mongo:
+        image: mongo:3.6.3
+        container_name: twitter_mongo
+        ports:
+            - 27017:27017
+        volumes:
+            - mongo-vol:/data/mongo
+        restart: on-failure            
+        
+
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        container_name: twitter_rabbitmq
+        ports: 
+            - 5672:5672
+            - 15672:15672
+        volumes: 
+            - rabbitmq-vol:/data/rabbitmq
+        restart: on-failure
+        environment: 
+            RABBITMQ_USER: guest
+            RABBITMQ_PASSWORD: guest
+
+    
+    es_listener_app:
+        build: .
+        command: bash -c "sleep 30 && python search_db_integrator/search_db_integrator_main.py"
+        container_name: twitter_es_listener_app
+        depends_on: 
+            - rabbitmq
+            - es
+        restart: on-failure
+
+    logger_listener_app:
+        build: .
+        command: bash -c "sleep 30 && python logger/queue_consumer.py"
+        container_name: twitter_logger_listener_app
+        depends_on: 
+            - rabbitmq
+            - es
+        restart: on-failure
+
+    scraper_app:
+        build: .
+        command: bash -c "sleep 30 && python scraper/scraper_main.py"
+        container_name: twitter_scraper_app
+        depends_on: 
+            - rabbitmq
+            - es
+            - mongo
+        restart: on-failure
+
+    webapp:
+        build: .
+        command: bash -c "sleep 30 && python webapp/manage.py migrate && python webapp/manage.py runserver 0.0.0.0:8000"
+        container_name: twitter_webapp
+        ports: 
+            - 8000:8000
+        depends_on: 
+            - es
+            - mongo
+            - rabbitmq
+        volumes: 
+            - webapp-vol:/data/webapp
+        
+
+
+    
+    
+volumes: 
+    es-vol:
+        driver: local
+    mongo-vol:
+        driver: local
+    rabbitmq-vol:
+        driver: local
+    webapp-vol:
+        driver: local
