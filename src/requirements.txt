@@ -26,7 +26,7 @@ ipython-genutils==0.2.0
 Jinja2==2.11.3
 jsonschema==3.2.0
 MarkupSafe==1.1.1
-mistune==0.8.4
+mistune==2.0.3
 mongoengine==0.19.1
 nbconvert==5.6.1
 nbformat==4.4.0
