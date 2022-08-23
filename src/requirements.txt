@@ -28,7 +28,7 @@ jsonschema==3.2.0
 MarkupSafe==1.1.1
 mistune==0.8.4
 mongoengine==0.19.1
-nbconvert==5.6.1
+nbconvert==6.5.1
 nbformat==4.4.0
 notebook==5.7.10
 packaging==20.9
